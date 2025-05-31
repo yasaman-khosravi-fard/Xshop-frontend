@@ -1,0 +1,1 @@
+export { default } from "file:///C:/wamp64/www/Xshop/Xshop-frontend/node_modules/@nuxt/vite-builder/dist/runtime/vite-node.mjs"
