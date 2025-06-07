@@ -1,10 +1,7 @@
 <template>
   <div>
-    <NuxtLoadingIndicator color="blue"/>
-    <Header />
+    <NuxtLoadingIndicator color="blue" />
     <NuxtPage />
-<!--      -->
-<!--      -->
+    <Footer />
   </div>
 </template>
-
