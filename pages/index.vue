@@ -42,7 +42,7 @@
           <div class="bg-gray-200 h-40 rounded mb-4">
             <img
               v-if="product.images && product.images.length"
-              :src="product.images[0].image_url"
+              :src="apiBase + product.images[0].image_url"
               alt="Product Image"
               class="h-40 w-full object-cover rounded"
             />
@@ -62,6 +62,6 @@
   </div>
 </template>
 <script setup>
-const { data: products } = await useFetch("http://localhost:8000/products");
-console.log(products.value);
+  const { public : { apiBase } } = useRuntimeConfig();
+const { data: products } = await useFetch(`${apiBase}/api/products`);
 </script>
