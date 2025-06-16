@@ -1,31 +1,28 @@
 <template>
   <div>
-    <!-- Navbar -->
-    <header class="bg-white shadow">
-      <div
-        class="container mx-auto px-4 py-4 flex justify-between items-center"
-      >
-        <h1 class="text-xl font-bold">MyShop</h1>
-        <nav class="space-x-6">
-          <a href="#" class="text-gray-700 hover:text-blue-500">Home</a>
-          <a href="#" class="text-gray-700 hover:text-blue-500">Shop</a>
-          <a href="#" class="text-gray-700 hover:text-blue-500">About</a>
-          <a href="#" class="text-gray-700 hover:text-blue-500">Contact</a>
-        </nav>
-      </div>
-    </header>
-
     <!-- Hero Banner -->
     <section class="bg-gray-100 py-20 text-center">
-      <h2 class="text-4xl font-bold mb-4">Welcome to MyShop</h2>
+      <h2 class="text-4xl font-bold mb-4">Welcome to XShop</h2>
       <p class="text-lg text-gray-600 mb-6">
         Find the best products at unbeatable prices.
       </p>
-      <button
-        class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition"
-      >
-        Shop Now
-      </button>
+
+      <!-- Search Bar -->
+      <!-- Search Bar -->
+      <div class="mb-6">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Search products..."
+          class="w-full md:w-1/2 border px-4 py-2 rounded"
+        />
+        <button
+          @click="applySearch"
+          class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition mt-2 md:mt-0"
+        >
+          Find
+        </button>
+      </div>
     </section>
 
     <!-- Featured Products -->
@@ -35,7 +32,7 @@
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
       >
         <div
-          v-for="product in products"
+          v-for="product in filteredProducts"
           :key="product.id"
           class="border rounded-lg p-4 shadow hover:shadow-lg transition"
         >
@@ -61,7 +58,38 @@
     </section>
   </div>
 </template>
+
 <script setup>
-  const { public : { apiBase } } = useRuntimeConfig();
-const { data: products } = await useFetch(`${apiBase}/api/products`);
+import { ref } from "vue";
+
+const {
+  public: { apiBase },
+} = useRuntimeConfig();
+
+// Full product list
+const { data: productsRaw } = await useFetch(`${apiBase}/api/products`);
+
+// Search query input
+const searchQuery = ref("");
+
+// Filtered list to display
+const filteredProducts = ref([]);
+
+// On load: show all products
+watchEffect(() => {
+  if (productsRaw.value) {
+    filteredProducts.value = productsRaw.value;
+  }
+});
+
+// Run when "Find" button is clicked
+function applySearch() {
+  if (!searchQuery.value) {
+    filteredProducts.value = productsRaw.value;
+  } else {
+    filteredProducts.value = productsRaw.value.filter((product) =>
+      product.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+  }
+}
 </script>
