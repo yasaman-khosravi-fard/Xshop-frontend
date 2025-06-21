@@ -8,7 +8,6 @@
       </p>
 
       <!-- Search Bar -->
-      <!-- Search Bar -->
       <div class="mb-6">
         <input
           type="text"
@@ -31,10 +30,11 @@
       <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
       >
-        <div
+        <NuxtLink
           v-for="product in filteredProducts"
           :key="product.id"
-          class="border rounded-lg p-4 shadow hover:shadow-lg transition"
+          :to="`/products/${product.id}`"
+          class="block border rounded-lg p-4 shadow hover:shadow-lg transition hover:bg-gray-50"
         >
           <div class="bg-gray-200 h-40 rounded mb-4">
             <img
@@ -53,7 +53,7 @@
           >
             Add to Cart
           </button>
-        </div>
+        </NuxtLink>
       </div>
     </section>
   </div>
