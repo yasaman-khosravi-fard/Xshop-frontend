@@ -1,12 +1,12 @@
 <template>
   <div class="container mx-auto px-4 py-12">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <img
-          v-if="product.images && product.images.length"
-          :src="apiBase + product.images[0].image_url"
-          alt="Product Image"
-          class="h-100 w-full object-cover rounded"
-        />
+      <img
+        v-if="product.images && product.images.length"
+        :src="apiBase + product.images[0].image_url"
+        alt="Product Image"
+        class="h-100 w-full object-cover rounded"
+      />
 
       <div>
         <h1 class="text-2xl font-bold mb-2">{{ product.title }}</h1>
@@ -15,6 +15,7 @@
           {{ product.price }}
         </p>
         <button
+          @click.prevent="addToCart(product)"
           class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
         >
           Add to Cart
@@ -38,4 +39,12 @@ const {
 } = await useAsyncData(`product-${route.params.id}`, () =>
   $fetch(`${apiBase}/api/show-product/${route.params.id}`)
 );
+
+import { useCartStore } from "@/stores/cartStore";
+const cart = useCartStore();
+
+function addToCart(product) {
+  cart.addItem(product);
+  console.log(product, " is added");
+}
 </script>

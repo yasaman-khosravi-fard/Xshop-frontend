@@ -49,6 +49,7 @@
           <p class="text-gray-600 mb-2">{{ product.description }}</p>
           <!-- <p v-if="product.images && product.images.length">{{ product.images[0].image_url }}</p> -->
           <button
+            @click.prevent="addToCart(product)"
             class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
           >
             Add to Cart
@@ -91,5 +92,13 @@ function applySearch() {
       product.title.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   }
+}
+
+import { useCartStore } from "@/stores/cartStore";
+const cart = useCartStore();
+
+function addToCart(product) {
+  cart.addItem(product);
+  console.log(product , " is added")
 }
 </script>
