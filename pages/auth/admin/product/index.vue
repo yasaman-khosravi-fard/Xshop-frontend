@@ -41,9 +41,9 @@
           <tr
             v-for="product in filteredProducts"
             :key="product.id"
-            class="hover:bg-gray-100 cursor-pointer transition"
+            class="hover:bg-gray-100 cursor-pointer transition">
 <!--            @click="goToProduct(product.id)"-->
-          >
+
             <td class="p-3 border">
               <img
                 v-if="product.images && product.images.length"
