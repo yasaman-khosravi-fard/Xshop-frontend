@@ -44,7 +44,11 @@
               class="h-40 w-full object-cover rounded"
             />
           </div>
-          <h4 class="font-semibold mb-2">{{ product.title }}</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <h4 class="font-semibold mb-2">{{ product.title }}</h4>
+            <h3 v-if="product.quantity > 0" class="text-green-600 mb-2">available</h3>
+            <h3 v-if="product.quantity == 0" class="text-red-600 mb-2">sold out</h3>
+          </div>
           <h3 class="text-gray-600 mb-2">{{ product.price }}</h3>
           <p class="text-gray-600 mb-2">{{ product.description }}</p>
           <!-- <p v-if="product.images && product.images.length">{{ product.images[0].image_url }}</p> -->
@@ -83,7 +87,6 @@ watchEffect(() => {
   }
 });
 
-// Run when "Find" button is clicked
 function applySearch() {
   if (!searchQuery.value) {
     filteredProducts.value = productsRaw.value;
@@ -99,6 +102,6 @@ const cart = useCartStore();
 
 function addToCart(product) {
   cart.addItem(product);
-  console.log(product , " is added")
+  console.log(product, " is added");
 }
 </script>
