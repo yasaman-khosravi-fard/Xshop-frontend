@@ -1,17 +1,6 @@
 <template>
   <div>
-    <!-- Navbar -->
-    <header class="bg-white shadow">
-      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 class="text-xl font-bold">MyShop</h1>
-        <nav class="space-x-6">
-          <NuxtLink to="/" class="text-gray-700 hover:text-blue-500">Home</NuxtLink>
-          <NuxtLink to="/shop" class="text-gray-700 hover:text-blue-500">Shop</NuxtLink>
-          <NuxtLink to="/about" class="text-blue-600 font-semibold">About</NuxtLink>
-          <NuxtLink to="/contact" class="text-gray-700 hover:text-blue-500">Contact</NuxtLink>
-        </nav>
-      </div>
-    </header>
+
 
     <!-- About Hero -->
     <section class="bg-gray-100 py-16 text-center">

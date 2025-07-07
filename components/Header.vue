@@ -11,9 +11,6 @@
           <NuxtLink to="/" class="text-gray-700 hover:text-blue-500"
             >Home</NuxtLink
           >
-          <NuxtLink to="/shop" class="text-gray-700 hover:text-blue-500"
-            >Shop</NuxtLink
-          >
           <NuxtLink to="/about" class="text-gray-700 hover:text-blue-500"
             >About</NuxtLink
           >

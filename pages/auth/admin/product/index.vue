@@ -73,12 +73,15 @@
                 class="text-blue-600 hover:underline"
                 >update</NuxtLink
               >
-              <NuxtLink
-                  :to="`/auth/admin/product/view/${product.id}`"
-                  class="text-blue-600 hover:underline"
-              >preview</NuxtLink
-              >
-              <button class="text-red-600 hover:underline">Delete</button>
+<!--              <NuxtLink-->
+<!--                  :to="`/auth/admin/product/view/${product.id}`"-->
+<!--                  class="text-blue-600 hover:underline"-->
+<!--              >preview</NuxtLink-->
+<!--              >-->
+              <button
+                  @click="handleDelete"
+                  class="text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-2"
+              >Delete</button>
             </td>
           </tr>
         </tbody>
@@ -136,4 +139,27 @@ const router = useRouter();
 // function goToProduct(productId) {
 //   router.push(`/auth/admin/product/view/${productId}`);
 // }
+
+
+import { useRouter } from "vue-router";
+// const router = useRouter();
+
+async function handleDelete() {
+  const confirmed = window.confirm("Are you sure you want to delete this product? This action cannot be undone.");
+
+  if (!confirmed) return;
+
+  try {
+    await $fetch(`${apiBase}/api/delete-product/${route.params.id}`, {
+      method: "DELETE",
+    });
+
+    alert("Product deleted successfully.");
+    router.push("/shop"); // Redirect to shop or products list
+  } catch (error) {
+    console.error("Failed to delete product:", error);
+    alert("Something went wrong while deleting the product.");
+  }
+}
+
 </script>
