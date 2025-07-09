@@ -2,6 +2,12 @@
   <div class="container mx-auto px-4 py-12">
     <h1 class="text-2xl font-bold mb-6">Add New Product</h1>
 
+    <div v-if="errors.length > 0" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+      <ul class="mb-0 list-disc list-inside">
+        <li v-for="(error, index) in errors" :key="index">{{ error }}</li>
+      </ul>
+    </div>
+
     <form
       @submit.prevent="submitProduct"
       class="bg-white shadow-md rounded p-6 max-w-2xl space-y-4"
@@ -95,7 +101,7 @@ const quantity = ref("");
 const images = ref([]);
 const previewImages = ref([]);
 const imageError = ref("");
-
+const errors = ref([]);
 const handleFilesChange = (event) => {
   const selected = Array.from(event.target.files);
 
@@ -136,8 +142,8 @@ const submitProduct = async () => {
     images.value = [];
     previewImages.value = [];
   } catch (error) {
-    console.error(error);
-    alert("Failed to add product.");
+    errors.value = Object.values(error.data).flat();
+    console.log(errors.value);
   }
 };
 </script>

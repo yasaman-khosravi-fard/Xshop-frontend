@@ -1,5 +1,10 @@
 <template>
   <div class="container mx-auto px-4 py-20">
+    <div v-if="errors.length > 0" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+      <ul class="mb-0 list-disc list-inside">
+        <li v-for="(error, index) in errors" :key="index">{{ error }}</li>
+      </ul>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Images Section -->
       <div>
@@ -129,6 +134,7 @@ const { data: product } = await useAsyncData(`product-${route.params.id}`, () =>
 
 import { useRouter } from "vue-router";
 const router = useRouter();
+const errors = ref([]);
 
 async function handleDelete() {
   const confirmed = window.confirm("Are you sure you want to delete this product? This action cannot be undone.");
@@ -199,8 +205,9 @@ async function updateProduct() {
     isEditing.value = false;
 
     product.value = { ...product.value, ...form.value };
-  } catch (err) {
-    console.error("Failed to update product", err);
+  } catch (error) {
+    errors.value = Object.values(error.data).flat();
+    console.log(errors.value);
   }
 }
 </script>

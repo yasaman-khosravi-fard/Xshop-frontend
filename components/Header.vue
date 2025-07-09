@@ -20,6 +20,7 @@
 
           <!-- Cart Icon with Badge -->
           <NuxtLink
+              v-if="!isAdminRoute"
             to="/cart"
             class="relative text-gray-700 hover:text-blue-500"
           >
@@ -61,4 +62,14 @@ const cart = useCartStore();
 const cartCount = computed(() =>
   cart.items.reduce((sum, item) => sum + item.quantity, 0)
 );
+
+import { useRoute } from "vue-router";
+import { computed } from "vue";
+
+
+const route = useRoute();
+
+
+const isAdminRoute = computed(() => route.path.includes("/admin"));
+
 </script>
