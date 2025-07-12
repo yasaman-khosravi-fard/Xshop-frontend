@@ -76,8 +76,25 @@
           </div>
         </div>
       </div>
+      <div>
+        <label class="block font-semibold mb-1">Product Type</label>
+        <select
+            v-model="selectedType"
+            class="w-full border px-4 py-2 rounded bg-white"
+        >
+          <option value="" disabled>Select a type</option>
+          <option
+              v-for="type in types"
+              :key="type.id"
+              :value="type.type"
+          >
+            {{ type.type }}
+          </option>
+        </select>
+      </div>
 
-      <!-- Submit Button -->
+
+
       <button
         type="submit"
         class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
@@ -99,9 +116,21 @@ const description = ref("");
 const price = ref("");
 const quantity = ref("");
 const images = ref([]);
+const selectedCategory = ref('');
 const previewImages = ref([]);
 const imageError = ref("");
 const errors = ref([]);
+const types = ref([]);
+const selectedType = ref('');
+
+onMounted(async () => {
+  try {
+    const response = await $fetch(`${apiBase}/api/get-types`);
+    types.value = response.types;
+  } catch (error) {
+    console.error("Failed to load types", error);
+  }
+});
 const handleFilesChange = (event) => {
   const selected = Array.from(event.target.files);
 
@@ -123,6 +152,8 @@ const submitProduct = async () => {
   formData.append("description", description.value);
   formData.append("price", price.value);
   formData.append("quantity", quantity.value);
+  formData.append("type", selectedType.value);
+
 
   images.value.forEach((file) => {
     formData.append("images[]", file);
@@ -142,7 +173,7 @@ const submitProduct = async () => {
     images.value = [];
     previewImages.value = [];
   } catch (error) {
-    errors.value = Object.values(error.data).flat();
+    errors.value = Object.values(error).flat();
     console.log(errors.value);
   }
 };

@@ -87,6 +87,22 @@
                 class="w-full border border-gray-300 px-3 py-2 rounded"
             />
           </div>
+          <div>
+            <label class="block font-semibold mb-1">Product Type</label>
+            <select
+                v-model="selectedType"
+                class="w-full border px-4 py-2 rounded bg-white"
+            >
+              <option value="" disabled>Select a type</option>
+              <option
+                  v-for="type in types"
+                  :key="type.id"
+                  :value="type.type"
+              >
+                {{ type.type }}
+              </option>
+            </select>
+          </div>
           <button
               @click="updateProduct"
               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -120,8 +136,9 @@
 <script setup>
 import { ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
-import { useCartStore } from "@/stores/cartStore";
+const selectedType = ref('');
 
+const types = ref([]);
 const route = useRoute();
 const {
   public: { apiBase },
@@ -136,6 +153,15 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const errors = ref([]);
 
+
+onMounted(async () => {
+  try {
+    const response = await $fetch(`${apiBase}/api/get-types`);
+    types.value = response.types;
+  } catch (error) {
+    console.error("Failed to load types", error);
+  }
+});
 async function handleDelete() {
   const confirmed = window.confirm("Are you sure you want to delete this product? This action cannot be undone.");
 
@@ -163,12 +189,7 @@ watchEffect(() => {
   }
 });
 
-// Cart (if needed)
-const cart = useCartStore();
-function addToCart(product) {
-  cart.addItem(product);
-  console.log(product, " is added");
-}
+
 
 // --- Edit Mode ---
 const isEditing = ref(false);
@@ -177,6 +198,7 @@ const form = ref({
   description: "",
   price: 0,
   quantity: 0,
+  selectedType: ""
 });
 
 // Sync form with fetched product data
@@ -186,6 +208,7 @@ watchEffect(() => {
     form.value.description = product.value.description;
     form.value.price = product.value.price;
     form.value.quantity = product.value.quantity;
+    form.value.selectedType = product.value.type;
   }
 });
 
@@ -198,6 +221,7 @@ async function updateProduct() {
         description: form.value.description,
         price: form.value.price,
         quantity: form.value.quantity,
+        type: form.value.selectedType
       },
     });
 

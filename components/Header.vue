@@ -66,10 +66,6 @@ const cartCount = computed(() =>
 import { useRoute } from "vue-router";
 import { computed } from "vue";
 
-
 const route = useRoute();
-
-
 const isAdminRoute = computed(() => route.path.includes("/admin"));
-
 </script>

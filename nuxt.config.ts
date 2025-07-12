@@ -15,6 +15,7 @@ export default defineNuxtConfig({
   },
   modules: [
     "@pinia/nuxt",
+    // '@axios',
     "pinia-plugin-persistedstate/nuxt", // ✅ this auto-registers the plugin
   ],
 });
