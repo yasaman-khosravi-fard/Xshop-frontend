@@ -1,20 +1,66 @@
 <template>
   <div class="max-w-7xl mx-auto px-4">
   <div class="min-h-screen bg-white text-gray-800">
-    <!-- Navbar -->
+
+    <!-- Filters -->
+    <!-- Unified Filters Row -->
+    <div class="flex flex-col md:flex-row flex-wrap items-center gap-4 mb-6 px-6">
+      <!-- Category Filter -->
+      <select
+          v-model="selectedType"
+          class="border border-gray-300 rounded px-3 py-2 w-full md:w-auto"
+      >
+        <option value="">All Categories</option>
+        <option v-for="type in types" :key="type.id" :value="type.type">
+          {{ type.type }}
+        </option>
+      </select>
+
+      <!-- Availability Filter -->
+      <select
+          v-model="availability"
+          class="border border-gray-300 rounded px-3 py-2 w-full md:w-auto"
+      >
+        <option value="">All</option>
+        <option value="available">Available</option>
+        <option value="sold_out">Sold Out</option>
+      </select>
+      <!-- price filter -->
+      <!-- Price Range Filter -->
+      <div class="w-full md:w-1/2">
+        <label class="block text-sm font-medium mb-1">Price Range (Toman)</label>
+        <Slider
+            v-model="priceRange"
+            :min="0"
+            :max="1000000"
+            :interval="10000"
+            :tooltip="'always'"
+            :lazy="true"
+            :dot-size="16"
+            :height="6"
+            :process-style="{ backgroundColor: '#3b82f6' }"
+            :rail-style="{ backgroundColor: '#e5e7eb' }"
+        />
+        <div class="flex justify-between mt-2 text-sm text-gray-700">
+          <span>{{ priceRange[0].toLocaleString() }} Toman</span>
+          <span>{{ priceRange[1].toLocaleString() }} Toman</span>
+        </div>
+      </div>
 
 
-    <!-- Search Bar (preserved and working) -->
-    <div class="flex flex-col md:flex-row items-stretch gap-2 md:gap-4 mb-6 px-6">
+
+      <!-- Search Input -->
       <input
           v-model="searchQuery"
           type="text"
           placeholder="Search products..."
-          class="w-full md:w-80 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="w-full md:w-64 border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
+
+      <!-- Search Button -->
       <button
           @click="applySearch"
-          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+          class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-200 w-full md:w-auto"
       >
         Find
       </button>
@@ -74,9 +120,7 @@
                 :key="product.id"
                 :to="`/products/${product.id}`"
                 class="w-64 bg-white shadow rounded-lg flex-shrink-0">
-
           <!--                class="w-72 bg-white shadow rounded-lg overflow-hidden flex-shrink-0 transition hover:shadow-lg">-->
-
               <img
                   v-if="product.images && product.images.length"
                   :src="apiBase + product.images[0].image_url"
@@ -87,6 +131,8 @@
                 <h3 class="text-lg font-semibold truncate">{{ product.title }}</h3>
                 <p class="text-gray-500 text-sm mt-1 line-clamp-2">{{ product.description }}</p>
                 <p class="text-blue-600 font-bold mt-2">{{ product.price }} Toman</p>
+                <p v-if="product.quantity > 0" class="text-green-600 mb-2">available</p>
+                <p v-if="product.quantity == 0" class="text-red-600 mb-2">sold out</p>
                 <button
                     @click.prevent="addToCart(product)"
                     class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
@@ -163,18 +209,6 @@ const searchQuery = ref("");
 const filteredProducts = ref([]);
 const { data: productsRaw } = await useFetch(`${apiBase}/api/products`);
 
-function applySearch() {
-  if (!searchQuery.value) {
-    filteredProducts.value = productsRaw.value;
-  } else {
-    filteredProducts.value = productsRaw.value.filter((product) =>
-        product.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
-  }
-}
-
-
-
 //animation of carousel
 const carousel = ref(null);
 
@@ -196,6 +230,44 @@ onMounted(() => {
 
   onUnmounted(() => clearInterval(interval));
 });
+
+
+//filter
+const selectedType = ref("");
+const availability = ref("");
+
+//applySearch function
+
+import Slider from '@vueform/slider'
+
+const priceRange = ref([0, 1000000]) // initial min and max
+
+
+function applySearch() {
+  let filtered = productsRaw.value;
+
+  if (searchQuery.value) {
+    filtered = filtered.filter(product =>
+        product.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+  }
+
+  if (selectedType.value) {
+    filtered = filtered.filter(product => product.type === selectedType.value);
+  }
+
+  if (availability.value === "available") {
+    filtered = filtered.filter(product => product.quantity > 0);
+  } else if (availability.value === "sold_out") {
+    filtered = filtered.filter(product => product.quantity === 0);
+  }
+  if (priceRange.value.length === 2) {
+    const [min, max] = priceRange.value;
+    filtered = filtered.filter(product => product.price >= min && product.price <= max);
+  }
+
+  filteredProducts.value = filtered;
+}
 
 </script>
 
