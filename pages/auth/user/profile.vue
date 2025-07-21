@@ -1,138 +1,106 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-4">
-    <div class="max-w-5xl mx-auto bg-white shadow-md rounded-xl overflow-hidden md:flex">
-      <!-- Sidebar -->
-      <div class="w-full md:w-1/3 bg-gray-100 p-6 space-y-4">
-        <h2 class="text-xl font-bold text-gray-800">My Account</h2>
-        <ul class="space-y-2">
-          <li>
-            <button @click="activeTab = 'profile'" :class="tabClass('profile')">Profile</button>
-          </li>
-          <li>
-            <button @click="activeTab = 'orders'" :class="tabClass('orders')">Orders</button>
-          </li>
-          <li>
-            <button @click="activeTab = 'cart'" :class="tabClass('cart')">Cart</button>
-          </li>
-          <li>
-            <button @click="logout" class="text-red-500 hover:underline">Logout</button>
-          </li>
-        </ul>
-      </div>
+  <div class="min-h-screen bg-gray-50 py-10 px-4">
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-md md:flex">
+      <!-- Sidebar Navigation -->
+      <aside class="md:w-1/4 border-r p-6 space-y-4 bg-gray-100">
+        <h2 class="text-xl font-semibold text-gray-800">Account</h2>
+        <nav class="space-y-2">
+          <button :class="tabClass('orders')" @click="activeTab = 'orders'">🧾 My Orders</button>
+          <button :class="tabClass('info')" @click="activeTab = 'info'">👤 Personal Info</button>
+          <button class="text-red-600 hover:underline mt-6" @click="logout">🚪 Logout</button>
+        </nav>
+      </aside>
 
       <!-- Main Content -->
-      <div class="w-full md:w-2/3 p-6">
-        <!-- Profile Tab -->
-        <div v-if="activeTab === 'profile'" class="space-y-4">
-          <h3 class="text-lg font-semibold">Update Profile</h3>
-          <form @submit.prevent="saveProfile" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium">Full Name</label>
-              <input v-model="form.name" type="text" class="input" required />
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Email</label>
-              <input v-model="form.email" type="email" class="input" disabled />
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Phone</label>
-              <input v-model="form.phone" type="tel" class="input" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Address</label>
-              <textarea v-model="form.address" rows="3" class="input"></textarea>
-            </div>
-            <button type="submit" class="btn-primary">Save Changes</button>
-          </form>
-        </div>
-
+      <section class="flex-1 p-6">
         <!-- Orders Tab -->
         <div v-if="activeTab === 'orders'">
-          <h3 class="text-lg font-semibold mb-2">Your Orders</h3>
+          <h3 class="text-2xl font-semibold mb-4">My Orders</h3>
           <div v-if="orders.length">
             <div
                 v-for="order in orders"
                 :key="order.id"
-                class="border p-4 rounded-md mb-3"
+                class="border rounded-md p-4 mb-3"
             >
-              <p><strong>Order #:</strong> {{ order.id }}</p>
+              <p><strong>ID:</strong> {{ order.id }}</p>
+              <p><strong>Status:</strong> {{ order.status }}</p>
               <p><strong>Date:</strong> {{ order.date }}</p>
               <p><strong>Total:</strong> ${{ order.total }}</p>
-              <p><strong>Status:</strong> {{ order.status }}</p>
             </div>
           </div>
-          <div v-else class="text-gray-500">You have no orders.</div>
+          <div v-else class="text-gray-500">You have no orders yet.</div>
         </div>
 
-        <!-- Cart Tab -->
-        <div v-if="activeTab === 'cart'">
-          <h3 class="text-lg font-semibold mb-2">Your Cart</h3>
-          <div v-if="cart.length">
-            <ul>
-              <li
-                  v-for="item in cart"
-                  :key="item.id"
-                  class="flex justify-between border-b py-2"
-              >
-                <span>{{ item.name }} (x{{ item.quantity }})</span>
-                <span>${{ item.price * item.quantity }}</span>
-              </li>
-            </ul>
-          </div>
-          <div v-else class="text-gray-500">Your cart is empty.</div>
+        <!-- Personal Info Tab -->
+        <div v-if="activeTab === 'info'">
+          <h3 class="text-2xl font-semibold mb-4">Personal Information</h3>
+          <form @submit.prevent="updateProfile" class="space-y-4 max-w-lg">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Name</label>
+              <input v-model="user.name" type="text" class="input" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Email</label>
+              <input v-model="user.email" type="email" class="input" disabled />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Phone</label>
+              <input v-model="user.phone" type="tel" class="input" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Address</label>
+              <textarea v-model="user.address" class="input" rows="3" />
+            </div>
+            <button class="btn-primary" type="submit">Update</button>
+          </form>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue';
 
-// Active tab
-const activeTab = ref("profile");
+const activeTab = ref('orders');
 
-// Form data (from API)
-const form = ref({
-  name: "John Doe",
-  email: "john@example.com",
-  phone: "123-456-7890",
-  address: "123 Main Street",
+// Example orders – you should replace this with actual API data
+const orders = ref([
+  { id: 'ORD123', status: 'Delivered', date: '2025-07-10', total: 99.99 },
+  { id: 'ORD124', status: 'Processing', date: '2025-07-14', total: 45.5 },
+]);
+
+// Example user – should come from auth/user store or API
+const user = ref({
+  name: 'Yasaman K.',
+  email: 'yasaman@example.com',
+  phone: '09123456789',
+  address: '123 Nuxt Street, Tehran',
 });
 
-// Dummy data for orders
-const orders = ref([
-  { id: 1, date: "2025-07-01", total: 99.99, status: "Delivered" },
-  { id: 2, date: "2025-06-22", total: 49.5, status: "Pending" },
-]);
-
-// Dummy cart
-const cart = ref([
-  { id: 1, name: "Product A", quantity: 2, price: 25.0 },
-  { id: 2, name: "Product B", quantity: 1, price: 49.99 },
-]);
-
-const saveProfile = () => {
-  alert("Profile updated successfully!");
+const logout = () => {
+  alert('Logging out...');
+  // Implement logout logic or redirect
 };
 
-const logout = () => {
-  alert("Logged out");
+const updateProfile = () => {
+  alert('Profile updated!');
+  // Replace with actual backend call to save changes
 };
 
 const tabClass = (tab) =>
-    `w-full text-left px-3 py-2 rounded-md transition ${
+    `w-full text-left px-3 py-2 rounded-md transition font-medium ${
         activeTab.value === tab
-            ? "bg-white text-blue-600 font-semibold shadow"
-            : "hover:bg-white hover:text-blue-600 text-gray-700"
+            ? 'bg-white text-blue-600 shadow'
+            : 'hover:bg-white hover:text-blue-600 text-gray-700'
     }`;
 </script>
 
 <!--<style scoped>-->
 <!--.input {-->
-<!--  @apply w-full border border-gray-300 rounded-md px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500;-->
+<!--  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500;-->
 <!--}-->
 <!--.btn-primary {-->
-<!--  @apply bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md;-->
+<!--  @apply bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700;-->
 <!--}-->
 <!--</style>-->

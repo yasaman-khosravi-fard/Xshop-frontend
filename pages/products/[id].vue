@@ -64,7 +64,7 @@
 
         <button
             :disabled="product.quantity === 0"
-            @click.prevent="addToCart(product)"
+            @click.prevent="addToCart(product , selectedQuantity)"
             class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Add to Cart
@@ -137,9 +137,9 @@ watchEffect(() => {
 });
 
 // Add to cart logic
-function addToCart(product) {
+function addToCart(product, quantity) {
   const item = { ...product, quantity: selectedQuantity.value };
-  cart.addItem(item);
+  cart.addItem(item , quantity);
   console.log(item, "is added to cart");
 }
 

@@ -59,9 +59,11 @@ import { useCartStore } from "@/stores/cartStore";
 const cart = useCartStore();
 
 // Derived cart item count (you can sum quantities or use length)
-const cartCount = computed(() =>
-  cart.items.reduce((sum, item) => sum + item.quantity, 0)
-);
+// const cartCount = computed(() =>
+//   cart.items.reduce((sum, item) => sum + item.quantity, 0)
+// );
+const cartCount = computed(() => cart.items.length);
+
 
 import { useRoute } from "vue-router";
 import { computed } from "vue";

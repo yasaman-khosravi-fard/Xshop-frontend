@@ -32,7 +32,7 @@
         <Slider
             v-model="priceRange"
             :min="0"
-            :max="1000000"
+            :max="10000000"
             :interval="10000"
             :tooltip="'always'"
             :lazy="true"
@@ -92,7 +92,7 @@
         <p class="text-gray-600 mb-2">{{ product.description }}</p>
         <!-- <p v-if="product.images && product.images.length">{{ product.images[0].image_url }}</p> -->
         <button
-            @click.prevent="addToCart(product)"
+            @click.prevent="addToCart(product,1)"
             class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
         >
           Add to Cart
@@ -132,9 +132,9 @@
                 <p class="text-gray-500 text-sm mt-1 line-clamp-2">{{ product.description }}</p>
                 <p class="text-blue-600 font-bold mt-2">{{ product.price }} Toman</p>
                 <p v-if="product.quantity > 0" class="text-green-600 mb-2">available</p>
-                <p v-if="product.quantity == 0" class="text-red-600 mb-2">sold out</p>
-                <button
-                    @click.prevent="addToCart(product)"
+                <p v-if="product.quantity === 0" class="text-red-600 mb-2">sold out</p>
+                <button v-if="product.quantity > 0 "
+                    @click.prevent="addToCart(product ,1)"
                     class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
                 >
                   Add to Cart
@@ -155,8 +155,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
+import {onMounted, ref} from 'vue'
+import {useCartStore} from "@/stores/cartStore";
+import Slider from '@vueform/slider'
+
 const {
   public: { apiBase },
 } = useRuntimeConfig();
@@ -174,8 +176,7 @@ const products = ref([]);
       // Fetch products for each type
       const productFetches = types.value.map(async (type) => {
         try {
-          const res = await $fetch(`${apiBase}/api/get-products-categorized/${type.type}`);
-          return res; // return products for this type
+          return await $fetch(`${apiBase}/api/get-products-categorized/${type.type}`); // return products for this type
         } catch (err) {
           console.error(`Failed to load products for type ${type}:`, err);
           return []; // fallback empty array
@@ -191,13 +192,10 @@ const products = ref([]);
   });
 
 
-
-
-import { useCartStore } from "@/stores/cartStore";
 const cart = useCartStore();
 
-function addToCart(product) {
-  cart.addItem(product);
+function addToCart(product ,num) {
+  cart.addItem(product , num);
   console.log(product, " is added");
 }
 
@@ -213,22 +211,22 @@ const { data: productsRaw } = await useFetch(`${apiBase}/api/products`);
 const carousel = ref(null);
 
 onMounted(() => {
-  const interval = setInterval(() => {
-    if (carousel.value) {
-      // Scroll by the width of one item (e.g., 300px)
-      carousel.value.scrollBy({ left: 300, behavior: 'smooth' });
+  // const interval = setInterval(() => {
+  //   if (carousel.value) {
+  //     // Scroll by the width of one item (e.g., 300px)
+  //     carousel.value.scrollBy({ left: 300, behavior: 'smooth' });
+  //
+  //     // Optional: loop back to start if scrolled near end
+  //     const maxScroll = carousel.value.scrollWidth - carousel.value.clientWidth;
+  //     if (carousel.value.scrollLeft >= maxScroll - 10) {
+  //       setTimeout(() => {
+  //         carousel.value.scrollTo({ left: 0, behavior: 'smooth' });
+  //       }, 600); // let it finish scrolling before snapping back
+  //     }
+  //   }
+  // }, 5000); // every 5 seconds
 
-      // Optional: loop back to start if scrolled near end
-      const maxScroll = carousel.value.scrollWidth - carousel.value.clientWidth;
-      if (carousel.value.scrollLeft >= maxScroll - 10) {
-        setTimeout(() => {
-          carousel.value.scrollTo({ left: 0, behavior: 'smooth' });
-        }, 600); // let it finish scrolling before snapping back
-      }
-    }
-  }, 5000); // every 5 seconds
-
-  onUnmounted(() => clearInterval(interval));
+  // onUnmounted(() => clearInterval(interval));
 });
 
 
@@ -238,9 +236,7 @@ const availability = ref("");
 
 //applySearch function
 
-import Slider from '@vueform/slider'
-
-const priceRange = ref([0, 1000000]) // initial min and max
+const priceRange = ref([0, 10000000]) // initial min and max
 
 
 function applySearch() {

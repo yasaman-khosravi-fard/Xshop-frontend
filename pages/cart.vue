@@ -6,10 +6,13 @@
       Your cart is empty.
     </div>
 
+
     <div v-else class="space-y-6">
-      <div
+
+      <NuxtLink
         v-for="item in cartItems"
         :key="item.id"
+        :to="`/products/${item.id}`"
         class="flex flex-col md:flex-row items-center border-b pb-4 gap-4"
       >
         <img
@@ -50,7 +53,7 @@
             Remove
           </button>
         </div>
-      </div>
+      </NuxtLink>
 
       <div class="mt-8 border-t pt-4 text-right">
         <p class="text-xl font-bold">Total: {{ formatPrice(totalPrice) }}</p>
