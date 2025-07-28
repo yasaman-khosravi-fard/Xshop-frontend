@@ -68,20 +68,49 @@
             </td>
             <td class="p-3 border">{{ formatDate(product.created_at) }}</td>
             <td class="p-3 border space-x-2">
-              <NuxtLink
-                :to="`/auth/admin/product/update/${product.id}`"
-                class="text-blue-600 hover:underline"
-                >update</NuxtLink
-              >
-<!--              <NuxtLink-->
-<!--                  :to="`/auth/admin/product/view/${product.id}`"-->
-<!--                  class="text-blue-600 hover:underline"-->
-<!--              >preview</NuxtLink-->
-<!--              >-->
-              <button
-                  @click="handleDelete"
-                  class="text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-2"
-              >Delete</button>
+
+<!--              <td class="p-3 border">-->
+                <div class="flex flex-wrap gap-2">
+                  <NuxtLink
+                      :to="`/auth/admin/product/update/${product.id}`"
+                      class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded shadow transition"
+                  >
+                    Update
+                  </NuxtLink>
+
+                  <button
+                      @click="handleDelete(product.id)"
+                      class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded shadow transition"
+                  >
+                    Delete
+                  </button>
+
+                  <span class="inline-flex items-center gap-2">
+    <label class="relative inline-flex items-center cursor-pointer">
+      <input
+          type="checkbox"
+          class="sr-only peer"
+          :checked="product.quantity > 0"
+          @change="toggleAvailability(product)"
+      />
+      <span
+          class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-all duration-300"
+      ></span>
+      <span
+          class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-full transition-transform duration-300"
+      ></span>
+    </label>
+    <span
+        class="text-xs font-medium"
+        :class="product.status > 0 ? 'text-green-600' : 'text-red-600'"
+    >
+      {{ product.status > 0 ? 'available' : 'unavailable' }}
+    </span>
+  </span>
+                </div>
+<!--              </td>-->
+
+
             </td>
           </tr>
         </tbody>
@@ -134,32 +163,49 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
-const router = useRouter();
 
 // function goToProduct(productId) {
 //   router.push(`/auth/admin/product/view/${productId}`);
 // }
 
 
-import { useRouter } from "vue-router";
-// const router = useRouter();
-
-async function handleDelete() {
+import { useRoute , useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
+async function handleDelete(id) {
   const confirmed = window.confirm("Are you sure you want to delete this product? This action cannot be undone.");
 
   if (!confirmed) return;
 
   try {
-    await $fetch(`${apiBase}/api/delete-product/${route.params.id}`, {
+    await $fetch(`${apiBase}/api/delete-product/${id}`, {
       method: "DELETE",
     });
 
     alert("Product deleted successfully.");
-    router.push("/shop"); // Redirect to shop or products list
+    router.go(0)
   } catch (error) {
     console.error("Failed to delete product:", error);
+
     alert("Something went wrong while deleting the product.");
   }
 }
 
+
+async function toggleAvailability(id) {
+
+  console.log("change availability")
+  // try {
+  //   await $fetch(`${apiBase}/api/update-product-availability/${id}`, {
+  //     method: "PUT",
+  //     body: { quantity: newQuantity },
+  //   });
+  //
+  //   // Update local state
+  //   product.quantity = newQuantity;
+  // } catch (error) {
+  //   console.error("Failed to update availability:", error);
+  //   alert("Error updating availability");
+  // }
+}
 </script>
